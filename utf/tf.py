@@ -1,69 +1,33 @@
 import re
+import sympy
+import operator
+import functools
+
+s = sympy.Symbol('s')
 
 class tf:
-    num = []
-    den = []
+    tf = 0
 
     def __init__(self, n, d=[]):
-        self.num = n
-        self.den = d
+        if type(n) == int or type(d) == int:
+            raise TypeError
+        if n == []:
+            self.tf = 0
+            return
+        numerator = functools.reduce(operator.add, [n[::-1][i]*s**i for i in range(len(n))])
+        if d == []:
+            self.tf = numerator
+        elif len(d) == 1 and d[0] == 0:
+            raise ZeroDivisionError
+        else:
+            denominator = functools.reduce(operator.add, [d[::-1][i]*s**i for i in range(len(d))])
+            self.tf = numerator/denominator
 
     def pprint(self):
-        print(self.tf_to_str())
+        print(f"{self.tf}")
 
-    def tf_to_str(self):
-        if type(self.num) == int and type(self.den) == int:
-            return str(self.num) + "\n-------\n" + str(self.den)
+    def get_tf(self):
+        print(type(self.tf))
+        return self.tf
 
-        numlen = len(self.num) - 1
-        denlen = len(self.den) - 1
-
-        if numlen == -1 or (numlen == 0 and self.num[0] == 0):
-            return "0"
-        
-        if denlen == -1 or (denlen == 0 and self.den[0] == 0):
-            raise ZeroDivisionError
-        
-        strn = ""
-        strd = ""
-        for i in range(numlen + 1):
-            ni = str(self.num[i])
-            print(ni)
-            if ni == "0":
-                if i == numlen:
-                    strn = strn[:-3]
-                continue
-            if numlen - i == 0:
-                strn += ni
-            elif numlen - i == 1:
-                if ni == "1":
-                    ni = ""
-                strn += ni + "s + "
-            else:
-                if ni == "1":
-                    ni = ""
-                strn += ni + "s^" + str(numlen - i) + " + "
-
-        for i in range(denlen + 1):
-            di = str(self.den[i])
-            if di == "0":
-                if i == denlen:
-                    strd = strd[:-3]
-                continue
-            if denlen - i == 0:
-                strd += di
-            elif denlen - i == 1:
-                strd += di + "s + "
-            else:
-                strd += di + "s^" + str(denlen - i) + " + "
-
-        return strn + "\n-------\n" + strd
-
-        
-
-    def str_to_tf(self, tf_str):
-        tf_list = re.split(tf_str)
-        #case for numerator only
-        if '/' in tf_list:
-            return
-        #case for numerator and denominator
+    
